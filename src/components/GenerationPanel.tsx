@@ -67,84 +67,103 @@ export function GenerationPanel({ generator, onClose, onGenerate }: GenerationPa
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="glass rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 glass z-10 flex items-center justify-between p-6 border-b border-[#2e2e3a]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/80 backdrop-blur-md">
+      <div className="relative w-full max-w-2xl max-h-[90vh] bg-[#050508] rounded-3xl border border-white/10 overflow-hidden shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#8b5cf6]/5 via-transparent to-[#06b6d4]/5" />
+        
+        <div className="relative z-10 flex items-center justify-between p-6 border-b border-white/5">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#8b5cf6]/20 to-[#06b6d4]/20 flex items-center justify-center">
-              <span className="text-2xl">{generator.icon}</span>
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8b5cf6]/20 to-[#06b6d4]/20 flex items-center justify-center">
+              <span className="text-3xl">{generator.icon}</span>
             </div>
             <div>
-              <h2 className="text-2xl font-semibold">{generator.name}</h2>
-              <p className="text-[#94a3b8] text-sm">{generator.description}</p>
+              <h2 className="text-xl font-bold text-white">{generator.name}</h2>
+              <p className="text-white/40 text-sm">{isVideo ? "Video Generation" : "Image Generation"}</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-[#1a1a24] transition-colors"
+            className="p-2 rounded-xl hover:bg-white/5 transition-colors"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="relative z-10 p-6 space-y-6 overflow-y-auto max-h-[60vh]">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium text-white/70 mb-3">
               Describe what you want to create
             </label>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={`Enter your prompt for ${generator.name}...`}
-              className="input-field min-h-[140px]"
+              maxLength={500}
+              className="w-full min-h-[140px] bg-white/5 border border-white/10 rounded-2xl p-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#8b5cf6]/50 focus:ring-1 focus:ring-[#8b5cf6]/20 transition-all resize-none"
             />
-            <div className="flex justify-between mt-2 text-sm text-[#94a3b8]">
-              <span>Be specific for better results</span>
-              <span>{prompt.length} / 500 characters</span>
+            <div className="flex justify-between mt-3 text-sm">
+              <span className="text-white/40">Be specific for better results</span>
+              <span className={`${prompt.length > 450 ? "text-red-400" : "text-white/30"}`}>
+                {prompt.length}/500
+              </span>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Style</label>
-              <select
-                value={style}
-                onChange={(e) => setStyle(e.target.value)}
-                className="input-field"
-              >
-                {stylePresets[generator.id]?.map((preset) => (
-                  <option key={preset} value={preset}>{preset}</option>
-                ))}
-              </select>
+              <label className="block text-sm font-medium text-white/70 mb-3">Style</label>
+              <div className="relative">
+                <select
+                  value={style}
+                  onChange={(e) => setStyle(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white appearance-none cursor-pointer focus:outline-none focus:border-[#8b5cf6]/50"
+                >
+                  {stylePresets[generator.id]?.map((preset) => (
+                    <option key={preset} value={preset} className="bg-[#050508]">{preset}</option>
+                  ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             {isVideo ? (
               <>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Duration</label>
-                  <select
-                    value={duration}
-                    onChange={(e) => setDuration(Number(e.target.value))}
-                    className="input-field"
-                  >
-                    {durations.map((d) => (
-                      <option key={d} value={d}>{d} seconds</option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-medium text-white/70 mb-3">Duration</label>
+                  <div className="relative">
+                    <select
+                      value={duration}
+                      onChange={(e) => setDuration(Number(e.target.value))}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white appearance-none cursor-pointer focus:outline-none focus:border-[#8b5cf6]/50"
+                    >
+                      {durations.map((d) => (
+                        <option key={d} value={d} className="bg-[#050508]">{d} seconds</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-2">Aspect Ratio</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-sm font-medium text-white/70 mb-3">Aspect Ratio</label>
                   <div className="flex gap-2">
                     {aspectRatios.map((ratio) => (
                       <button
                         key={ratio}
                         onClick={() => setAspectRatio(ratio as "16:9" | "9:16" | "1:1")}
-                        className={`flex-1 py-3 rounded-xl border transition-all ${
+                        className={`flex-1 py-3 rounded-xl border text-sm font-medium transition-all ${
                           aspectRatio === ratio
                             ? "border-[#8b5cf6] bg-[#8b5cf6]/10 text-[#8b5cf6]"
-                            : "border-[#2e2e3a] hover:border-[#8b5cf6]/50"
+                            : "border-white/10 text-white/50 hover:border-white/20 hover:text-white/70"
                         }`}
                       >
                         {ratio}
@@ -156,25 +175,32 @@ export function GenerationPanel({ generator, onClose, onGenerate }: GenerationPa
             ) : (
               <>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Resolution</label>
-                  <select
-                    value={resolution}
-                    onChange={(e) => setResolution(e.target.value)}
-                    className="input-field"
-                  >
-                    {resolutions.map((res) => (
-                      <option key={res} value={res}>{res}</option>
-                    ))}
-                  </select>
+                  <label className="block text-sm font-medium text-white/70 mb-3">Resolution</label>
+                  <div className="relative">
+                    <select
+                      value={resolution}
+                      onChange={(e) => setResolution(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white appearance-none cursor-pointer focus:outline-none focus:border-[#8b5cf6]/50"
+                    >
+                      {resolutions.map((res) => (
+                        <option key={res} value={res} className="bg-[#050508]">{res}</option>
+                      ))}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-2">Negative Prompt</label>
+                  <label className="block text-sm font-medium text-white/70 mb-3">Negative Prompt</label>
                   <input
                     type="text"
                     value={negativePrompt}
                     onChange={(e) => setNegativePrompt(e.target.value)}
                     placeholder="What to avoid..."
-                    className="input-field"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white placeholder:text-white/30 focus:outline-none focus:border-[#8b5cf6]/50"
                   />
                 </div>
               </>
@@ -182,8 +208,8 @@ export function GenerationPanel({ generator, onClose, onGenerate }: GenerationPa
           </div>
 
           {result && (
-            <div className="rounded-xl overflow-hidden bg-[#0a0a0f] border border-[#2e2e3a]">
-              <div className="aspect-video relative">
+            <div className="rounded-2xl overflow-hidden border border-white/10">
+              <div className="aspect-video relative bg-black/50">
                 {result.contentType === "video" ? (
                   <video 
                     src={result.url} 
@@ -198,11 +224,11 @@ export function GenerationPanel({ generator, onClose, onGenerate }: GenerationPa
                   />
                 )}
               </div>
-              <div className="p-4 flex gap-2">
+              <div className="p-4 flex gap-3 bg-white/5">
                 <a
                   href={result.url}
                   download
-                  className="btn-primary flex items-center gap-2"
+                  className="flex-1 py-3 bg-gradient-to-r from-[#8b5cf6] to-[#06b6d4] rounded-xl text-center font-medium text-white flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -211,7 +237,7 @@ export function GenerationPanel({ generator, onClose, onGenerate }: GenerationPa
                 </a>
                 <button
                   onClick={() => setResult(null)}
-                  className="px-4 py-3 rounded-xl border border-[#2e2e3a] hover:bg-[#1a1a24] transition-colors"
+                  className="px-4 py-3 rounded-xl border border-white/10 text-white/60 hover:bg-white/5 transition-colors"
                 >
                   Create Another
                 </button>
@@ -220,21 +246,27 @@ export function GenerationPanel({ generator, onClose, onGenerate }: GenerationPa
           )}
 
           {isGenerating && (
-            <div className="rounded-xl p-8 bg-[#0a0a0f] border border-[#2e2e3a]">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 rounded-full border-4 border-[#8b5cf6]/30 border-[#8b5cf6] animate-spin" />
-                <p className="text-[#94a3b8]">Generating your content...</p>
-                <p className="text-sm text-[#64748b]">This may take a minute</p>
+            <div className="rounded-2xl p-10 bg-white/5 border border-white/10">
+              <div className="flex flex-col items-center gap-6">
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-full border-4 border-white/10" />
+                  <div className="absolute inset-0 w-20 h-20 rounded-full border-4 border-[#8b5cf6] border-t-transparent animate-spin" />
+                  <div className="absolute inset-2 w-16 h-16 rounded-full border-4 border-[#06b6d4] border-b-transparent animate-spin" style={{ animationDirection: "reverse", animationDuration: "1s" }} />
+                </div>
+                <div className="text-center">
+                  <p className="text-white font-medium mb-1">Generating your content...</p>
+                  <p className="text-white/40 text-sm">This may take a minute</p>
+                </div>
               </div>
             </div>
           )}
         </div>
 
-        <div className="sticky bottom-0 glass p-6 border-t border-[#2e2e3a]">
+        <div className="relative z-10 p-6 border-t border-white/5">
           <button
             onClick={handleGenerate}
             disabled={!prompt.trim() || isGenerating}
-            className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2"
+            className="w-full py-4 bg-gradient-to-r from-[#8b5cf6] via-[#a78bfa] to-[#06b6d4] rounded-2xl text-white font-semibold text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGenerating ? (
               <>
